@@ -5,5 +5,6 @@ module.exports = {
       args[0].title = '三角消'
       return args
     })
-  }
+  },
+  outputDir: 'docs'
 }
