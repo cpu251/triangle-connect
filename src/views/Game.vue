@@ -92,21 +92,31 @@ export default {
       if(this.$refs.container) {
         const width = this.$refs.container.offsetHeight * (this.game.items[0].length - 1) / (this.game.items.length - 1);
         this.rowStyleObject['max-width'] = width + 'px'
+        let pointSize
         if(this.game.items[0].length < 5) {
-          this.rowStyleObject['--game-point-size'] = width / ((this.game.items[0].length - 1) * 3) + 'px'
+          pointSize = width / ((this.game.items[0].length - 1) * 3)
         } else if(this.game.items[0].length < 7) {
-          this.rowStyleObject['--game-point-size'] = width / ((this.game.items[0].length - 1) * 2) + 'px'
+          pointSize = width / ((this.game.items[0].length - 1) * 2)
         } else {
-          this.rowStyleObject['--game-point-size'] = width / ((this.game.items[0].length - 1) * 1.7) + 'px'
+          pointSize = width / ((this.game.items[0].length - 1) * 1.7)
         }
+        if(pointSize > 90) {
+          pointSize = 90
+        }
+        this.rowStyleObject['--game-point-size'] = pointSize + 'px'
         setTimeout(() => {
+          let pointSize
           if(this.game.items[0].length < 5) {
-            this.rowStyleObject['--game-point-size'] = this.$refs.gameRow.offsetWidth / ((this.game.items[0].length - 1) * 3) + 'px'
+            pointSize = this.$refs.gameRow.offsetWidth / ((this.game.items[0].length - 1) * 3)
           } else if(this.game.items[0].length < 7) {
-            this.rowStyleObject['--game-point-size'] = this.$refs.gameRow.offsetWidth / ((this.game.items[0].length - 1) * 2) + 'px'
+            pointSize = this.$refs.gameRow.offsetWidth / ((this.game.items[0].length - 1) * 2)
           } else {
-            this.rowStyleObject['--game-point-size'] = this.$refs.gameRow.offsetWidth / ((this.game.items[0].length - 1) * 1.7) + 'px'
+            pointSize = this.$refs.gameRow.offsetWidth / ((this.game.items[0].length - 1) * 1.7)
           }
+          if(pointSize > 90) {
+            pointSize = 90
+          }
+          this.rowStyleObject['--game-point-size'] = pointSize + 'px'
           if(this.$refs.gameRow.offsetWidth > 600) {
             this.rowStyleObject['--game-border-width'] = '5px'
           } else if(this.$refs.gameRow.offsetWidth > 400) {

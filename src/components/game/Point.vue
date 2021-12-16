@@ -30,6 +30,7 @@ export default {
       y: 0,
       actionItem: null,
       time: 0,
+      timeOver: false,
       soundCountDownTime: 0,
       isPC: !('ontouchend' in document),
       triggerEvent: !('ontouchend' in document) ? 'mousedown' : 'touchstart'
@@ -64,8 +65,11 @@ export default {
           if(this.game.sound) {
             this.gameSound.soundTimeOver.play()
           }
-          this.moveEnd(true)
+          this.timeOver = true
+          this.moveEnd()
           return
+        } else if(this.timeOver) {
+          this.timeOver = false
         }
 
         if(this.game.sound && this.game.time < 5000) {
@@ -103,10 +107,9 @@ export default {
     },
     /*
     * 移动结束的处理
-    * @params flag bool 是否强制处理
     * */
-    moveEnd(flag = false) {
-      if(flag || (!this.settlementFlag && !this.moveFlag)) {
+    moveEnd() {
+      if(this.timeOver || (!this.settlementFlag && !this.moveFlag)) {
         this.moveFlag = true
         this.actionItem.zIndex = 2
         this.actionItem.marginTop = 0
