@@ -5,11 +5,11 @@
     <p>当宝石全部消除时，游戏进入下一关。</p>
     <p>如图，移动宝石球后，红色包围的三角形的宝石块将消除。</p>
     <p>
-      <img class="img-fluid" src="../assets/about-1.jpg">
+      <img class="img-fluid" src="../assets/images/about-1.jpg">
     </p>
     <p>如图，移动宝石球后，红色包围的三角形的宝石块，以及黄色包围的三角形的宝石块，将同时消除。</p>
     <p>
-      <img class="img-fluid" src="../assets/about-2.jpg">
+      <img class="img-fluid" src="../assets/images/about-2.jpg">
     </p>
   </div>
 </template>

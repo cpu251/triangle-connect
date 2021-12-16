@@ -1,8 +1,8 @@
 <template>
-  <template v-for="(items, firstIndex) in items" :key="items">
-    <div v-if="firstIndex < items.length - 1" :class="firstClassObject()" :style="firstStyleObject(items)">
-      <template v-for="(item, secondIndex) in items" :key="item">
-        <div v-if="secondIndex < items.length - 1" :class="secondClassObject(item)" :style="secondStyleObject()">
+  <template v-for="(firstItems, firstIndex) in items" :key="firstItems">
+    <div v-if="firstIndex < items.length - 1" :class="firstClassObject()" :style="firstStyleObject(firstItems)">
+      <template v-for="(item, secondIndex) in firstItems" :key="item">
+        <div v-if="secondIndex < firstItems.length - 1" :class="secondClassObject(item, firstIndex, secondIndex)">
           <div class="slash"></div>
         </div>
       </template>
@@ -12,7 +12,7 @@
 
 <script>
 export default {
-  name: "FirstLayer",
+  name: "LineLayer",
   props: {
     items: Array
   },
@@ -33,19 +33,143 @@ export default {
         }
       }
     },
+    /*
+    * 计算直线和斜线的class
+    * */
     secondClassObject() {
-      return (item) => {
-        return {
-          'second-layer': true,
-          [item[0].type]: true
+      return (item, firstIndex, secondIndex) => {
+        let classObject = {
+          'second-layer': true
         }
-      }
-    },
-    secondStyleObject() {
-      return () => {
-        return {
+        let topFlag = true
+        let bottomFlag = true
+        let leftFlag = true
+        let rightFlag = true
+        let slashFlag = true
+        if(firstIndex % 2 === 0) {
+          bottomFlag = false
+          if(secondIndex % 2 === 0) {
+            rightFlag = false
+            if(secondIndex + 1 < this.items[firstIndex].length) {
+              for (const item of this.items[firstIndex][secondIndex + 1]) {
+                if(topFlag && (item.topItem || item.bottomItem)) {
+                  topFlag = false
+                }
+                if(slashFlag && item.bottomItem) {
+                  slashFlag = false
+                }
+              }
+            }
+            if(firstIndex + 1 < this.items.length) {
+              for (const item of this.items[firstIndex + 1][secondIndex]) {
+                if(leftFlag && (item.leftItem || item.rightItem)) {
+                  leftFlag = false
+                }
+                if(slashFlag && item.rightItem) {
+                  slashFlag = false
+                }
+              }
+            }
+          } else {
+            leftFlag = false
+            if(secondIndex >= 0) {
+              for (const item of this.items[firstIndex][secondIndex]) {
+                if(topFlag && (item.topItem || item.bottomItem)) {
+                  topFlag = false
+                }
+                if(slashFlag && item.bottomItem) {
+                  slashFlag = false
+                }
+              }
+            }
+            if(firstIndex + 1 < this.items.length && secondIndex + 1 < this.items[firstIndex].length) {
+              for (const item of this.items[firstIndex + 1][secondIndex + 1]) {
+                if(slashFlag && item.leftItem) {
+                  slashFlag = false
+                }
+              }
+            }
+            if(secondIndex + 2 === this.items[firstIndex].length) {
+              for (const item of this.items[firstIndex + 1][secondIndex + 1]) {
+                if(rightFlag && item.leftItem) {
+                  rightFlag = false
+                }
+              }
+            } else {
+              rightFlag = false
+            }
+          }
+        } else {
+          topFlag = false
+          if(secondIndex % 2 === 0) {
+            rightFlag = false
+            for (const item of this.items[firstIndex][secondIndex]) {
+              if(leftFlag && (item.leftItem || item.rightItem)) {
+                leftFlag = false
+              }
+              if(slashFlag && item.rightItem) {
+                slashFlag = false
+              }
+            }
+            if(firstIndex + 1 < this.items.length && secondIndex + 1 < this.items[firstIndex].length) {
+              for (const item of this.items[firstIndex + 1][secondIndex + 1]) {
+                if(slashFlag && item.topItem) {
+                  slashFlag = false
+                }
+              }
+            }
+            if(firstIndex + 2 === this.items.length && secondIndex + 1 < this.items[firstIndex].length) {
+              for (const item of this.items[firstIndex + 1][secondIndex + 1]) {
+                if(bottomFlag && item.topItem) {
+                  bottomFlag = false
+                }
+              }
+            } else {
+              bottomFlag = false
+            }
+          } else {
+            leftFlag = false
+            if(firstIndex + 1 < this.items.length) {
+              for (const item of this.items[firstIndex + 1][secondIndex]) {
+                if(slashFlag && item.topItem) {
+                  slashFlag = false
+                }
+              }
+            }
+            if(secondIndex + 1 < this.items[firstIndex].length) {
+              for (const item of this.items[firstIndex][secondIndex + 1]) {
+                if(slashFlag && item.leftItem) {
+                  slashFlag = false
+                }
+              }
+            }
+            if(firstIndex + 2 === this.items.length) {
+              for (const item of this.items[firstIndex + 1][secondIndex]) {
+                if(bottomFlag && item.topItem) {
+                  bottomFlag = false
+                }
+              }
+            } else {
+              bottomFlag = false
+            }
+            if(secondIndex + 2 === this.items[firstIndex].length) {
+              for (const item of this.items[firstIndex][secondIndex + 1]) {
+                if(rightFlag && item.leftItem) {
+                  rightFlag = false
+                }
+              }
+            } else {
+              rightFlag = false
+            }
+          }
+        }
+        classObject['top-none'] = topFlag
+        classObject['bottom-none'] = bottomFlag
+        classObject['left-none'] = leftFlag
+        classObject['right-none'] = rightFlag
+        classObject['slash-none'] = slashFlag
 
-        }
+        return classObject
       }
     }
   }
@@ -109,8 +233,16 @@ export default {
   margin-bottom: calc(var(--game-border-width) * -0.5);
   border-bottom: var(--game-border-color) var(--game-border-style) var(--game-border-width);
 }
+.second-layer.left-none::before,
+.second-layer.right-none:last-child::before,
+.first-layer:nth-child(2n - 1) .second-layer.top-none::after,
+.first-layer:last-child .second-layer.bottom-none::after {
+  transition: 0.3s border ease;
+  --game-border-color: var(--game-border-color-none);
+}
 /* 斜线 */
-.first-layer:nth-child(2n - 1) .second-layer:nth-child(2n - 1) .slash::before, .first-layer:nth-child(2n) .second-layer:nth-child(2n) .slash::before {
+.first-layer:nth-child(2n - 1) .second-layer:nth-child(2n - 1) .slash::before,
+.first-layer:nth-child(2n) .second-layer:nth-child(2n) .slash::before {
   content: '';
   position: absolute;
   width: 141.42%;
@@ -120,7 +252,8 @@ export default {
   transform: translate(-50%, 21%) rotate(45deg);
   border-top: var(--game-border-color) var(--game-border-style) var(--game-border-width);
 }
-.first-layer:nth-child(2n - 1) .second-layer:nth-child(2n) .slash::after, .first-layer:nth-child(2n) .second-layer:nth-child(2n - 1) .slash::after {
+.first-layer:nth-child(2n - 1) .second-layer:nth-child(2n) .slash::after,
+.first-layer:nth-child(2n) .second-layer:nth-child(2n - 1) .slash::after {
   content: '';
   position: absolute;
   width: 141.42%;
@@ -130,8 +263,16 @@ export default {
   transform: translate(50%, 21%) rotate(-45deg);
   border-top: var(--game-border-color) var(--game-border-style) var(--game-border-width);
 }
+.first-layer:nth-child(2n - 1) .second-layer.slash-none:nth-child(2n - 1) .slash::before,
+.first-layer:nth-child(2n) .second-layer.slash-none:nth-child(2n) .slash::before,
+.first-layer:nth-child(2n - 1) .second-layer.slash-none:nth-child(2n) .slash::after,
+.first-layer:nth-child(2n) .second-layer.slash-none:nth-child(2n - 1) .slash::after {
+  transition: 0.3s border ease;
+  --game-border-color: var(--game-border-color-none);
+}
 /* 点 */
-.first-layer:nth-child(2n - 1) .second-layer:nth-child(2n - 1) .slash::after, .first-layer:nth-child(2n) .second-layer:nth-child(2n) .slash::after {
+.first-layer:nth-child(2n - 1) .second-layer:nth-child(2n - 1) .slash::after,
+.first-layer:nth-child(2n) .second-layer:nth-child(2n) .slash::after {
   content: '';
   position: absolute;
   width: calc(var(--game-border-width) * 3);
