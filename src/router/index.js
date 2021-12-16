@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router'
 import Game from '../views/Game.vue'
 
 const routes = [
@@ -22,7 +22,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: location.origin === 'file://' ? createWebHashHistory() : createWebHistory(location.pathname),
   linkActiveClass: 'active',
   routes
 })
