@@ -1,3 +1,4 @@
+<script src="../../../xampp/htdocs/jpgz/node/test.js"></script>
 <template>
   <div class="d-flex flex-column align-items-center vh-100" :style="styleObject()">
     <nav class="navbar navbar-expand navbar-dark bg-dark w-100 mb-3">
@@ -74,6 +75,9 @@ export default {
     const gameHistory = localStorage.getItem('gameHistory')
     if(gameHistory) {
       this.gameHistory = JSON.parse(gameHistory)
+      if(this.gameHistory.sound !== undefined) {
+        this.game.sound = this.gameHistory.sound
+      }
     }
     this.$watch('game.gameOver', () => {
       if(this.game.gameOver) {
@@ -90,6 +94,10 @@ export default {
           localStorage.setItem('gameHistory', JSON.stringify(this.gameHistory))
         }
       }
+    })
+    this.$watch('game.sound', () => {
+      this.gameHistory.sound = this.game.sound
+      localStorage.setItem('gameHistory', JSON.stringify(this.gameHistory))
     })
     //导航切换时的处理
     this.$watch('$router.currentRoute.value.name', (newVal) => {
