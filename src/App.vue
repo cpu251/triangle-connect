@@ -1,4 +1,3 @@
-<script src="../../../xampp/htdocs/jpgz/node/test.js"></script>
 <template>
   <div class="d-flex flex-column align-items-center vh-100" :style="styleObject()">
     <nav class="navbar navbar-expand navbar-dark bg-dark w-100 mb-3">
